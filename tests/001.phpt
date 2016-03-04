@@ -3,19 +3,8 @@ Check for pdbc_mysql presence
 --SKIPIF--
 <?php if (!extension_loaded("pdbc_mysql")) print "skip"; ?>
 --FILE--
-<?php 
-echo "pdbc_mysql extension is available";
-/*
-	you can add regression tests for your extension here
-
-  the output of your test code has to be equal to the
-  text in the --EXPECT-- section below for the tests
-  to pass, differences between the output and the
-  expected text are interpreted as failure
-
-	see php7/README.TESTING for further information on
-  writing regression tests
-*/
+<?php
+var_dump(class_exists('php\pdbc\MysqlDriver'));
 ?>
 --EXPECT--
-pdbc_mysql extension is available
+bool(true)

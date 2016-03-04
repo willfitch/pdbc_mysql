@@ -8,7 +8,7 @@ dnl without editing.
 dnl If your extension references something external, use with:
 
 PHP_ARG_WITH(pdbc_mysql, for pdbc_mysql support,
-[  --with-pdbc-mysql             Include pdbc_mysql support])
+[  --with-pdbc-mysql[=FILE]         Include pdbc_mysql support])
 
 dnl Otherwise use enable:
 
@@ -17,46 +17,71 @@ dnl Make sure that the comment is aligned:
 dnl [  --enable-pdbc_mysql           Enable pdbc_mysql support])
 
 if test "$PHP_PDBC_MYSQL" != "no"; then
-  dnl Write more examples of tests here...
 
-  dnl # --with-pdbc_mysql -> check with-path
-  dnl SEARCH_PATH="/usr/local /usr"     # you might want to change this
-  dnl SEARCH_FOR="/include/pdbc_mysql.h"  # you most likely want to change this
-  dnl if test -r $PHP_PDBC_MYSQL/$SEARCH_FOR; then # path given as parameter
-  dnl   PDBC_MYSQL_DIR=$PHP_PDBC_MYSQL
-  dnl else # search default path list
-  dnl   AC_MSG_CHECKING([for pdbc_mysql files in default path])
-  dnl   for i in $SEARCH_PATH ; do
-  dnl     if test -r $i/$SEARCH_FOR; then
-  dnl       PDBC_MYSQL_DIR=$i
-  dnl       AC_MSG_RESULT(found in $i)
-  dnl     fi
-  dnl   done
-  dnl fi
+  MYSQL_CONFIG=$PHP_PDBC_MYSQL  
+  MYSQL_LIB_NAME='mysqlclient'
+
+  if test "$enable_maintainer_zts" = "yes"; then
+    MYSQL_LIB_CFG='--libs_r'
+    MYSQL_LIB_NAME='mysqlclient_r'
+  else
+    MYSQL_LIB_CFG='--libs'
+  fi
+
+  AC_MSG_CHECKING([for PDBC includes])
+
+  if test -f $abs_srcdir/include/ext/pdbc/php_pdbc.h; then
+    PDBC_INCLUDE=$abs_srcdir/ext
+  elif test -f $abs_srcdir/ext/pdbc/php_pdbc.h; then
+    PDBC_INCLUDE=$abs_srcdir/ext
+  elif test -f $phpincludedir/ext/pdbc/php_pdbc.h; then
+    PDBC_INCLUDE=$phpincludedir/ext
+  else
+    AC_MSG_ERROR([Unable to find PDBC header file php_pdbc.h])
+  fi
+
+  AC_MSG_RESULT($PDBC_INCLUDE)
+    
+  if test -x "$MYSQL_CONFIG" && $MYSQL_CONFIG $MYSQL_LIB_CFG > /dev/null 2>&1; then
+    PDBC_INCLINE=`$MYSQL_CONFIG --cflags | $SED -e "s/'//g"`
+    PDBC_LIBLINE=`$MYSQL_CONFIG $MYSQL_LIB_CFG | $SED -e "s/'//g"`
+  else
+    AC_MSG_RESULT([mysql_config not found])
+    AC_MSG_ERROR([please specify the mysql_config location or reinstall mysql])
+  fi
+
   dnl
-  dnl if test -z "$PDBC_MYSQL_DIR"; then
-  dnl   AC_MSG_RESULT([not found])
-  dnl   AC_MSG_ERROR([Please reinstall the pdbc_mysql distribution])
-  dnl fi
-
-  dnl # --with-pdbc_mysql -> add include path
-  dnl PHP_ADD_INCLUDE($PDBC_MYSQL_DIR/include)
-
-  dnl # --with-pdbc_mysql -> check for lib and symbol presence
-  dnl LIBNAME=pdbc_mysql # you may want to change this
-  dnl LIBSYMBOL=pdbc_mysql # you most likely want to change this 
-
-  dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
-  dnl [
-  dnl   PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $PDBC_MYSQL_DIR/$PHP_LIBDIR, PDBC_MYSQL_SHARED_LIBADD)
-  dnl   AC_DEFINE(HAVE_PDBC_MYSQLLIB,1,[ ])
-  dnl ],[
-  dnl   AC_MSG_ERROR([wrong pdbc_mysql lib version or lib not found])
-  dnl ],[
-  dnl   -L$PDBC_MYSQL_DIR/$PHP_LIBDIR -lm
-  dnl ])
+  dnl Check the library
   dnl
-  dnl PHP_SUBST(PDBC_MYSQL_SHARED_LIBADD)
+  PHP_CHECK_LIBRARY($MYSQL_LIB_NAME, mysql_set_server_option,
+  [
+    PHP_EVAL_INCLINE($PDBC_INCLINE)
+    PHP_EVAL_LIBLINE($PDBC_LIBLINE, PDBC_SHARED_LIBADD)
+    AC_DEFINE(HAVE_MYSQLILIB, 1, [ ])
+    PHP_CHECK_LIBRARY($MYSQL_LIB_NAME, mysql_set_character_set,
+    [ ],[
+      AC_MSG_ERROR([MySQLI doesn't support versions < 4.1.13 (for MySQL 4.1.x) and < 5.0.7 for (MySQL 5.0.x) anymore. Please update your libraries.])
+    ],[$PDBC_LIBLINE])
+  ],[
+    AC_MSG_ERROR([wrong mysql library version or lib not found. Check config.log for more information.])
+  ],[
+    $PDBC_LIBLINE
+  ])
 
-  PHP_NEW_EXTENSION(pdbc_mysql, pdbc_mysql.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  dnl
+  dnl Check the library for mysql_stmt_next_result
+  dnl
+  PHP_CHECK_LIBRARY($MYSQL_LIB_NAME, mysql_stmt_next_result,
+  [
+    AC_DEFINE(HAVE_STMT_NEXT_RESULT,             1, [ ])
+  ],[
+  ],[
+    $PDBC_LIBLINE
+  ])
+
+  PDBC_MYSQL_CLASSES="\
+    pdbc_mysql_driver.c \
+  ";
+
+  PHP_NEW_EXTENSION(pdbc_mysql, pdbc_mysql.c $PDBC_MYSQL_CLASSES, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi

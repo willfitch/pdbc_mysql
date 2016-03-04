@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: Will Fitch <willfitch@php.net>                               |
   +----------------------------------------------------------------------+
 */
 
@@ -22,10 +22,8 @@
 #include "config.h"
 #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_pdbc_mysql.h"
+#include <mysql.h>
 
 /* If you declare any globals in php_pdbc_mysql.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(pdbc_mysql)
@@ -43,35 +41,6 @@ PHP_INI_BEGIN()
 PHP_INI_END()
 */
 /* }}} */
-
-/* Remove the following function when you have successfully modified config.m4
-   so that your module can be compiled into PHP, it exists only for testing
-   purposes. */
-
-/* Every user-visible function in PHP should document itself in the source */
-/* {{{ proto string confirm_pdbc_mysql_compiled(string arg)
-   Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(confirm_pdbc_mysql_compiled)
-{
-	char *arg = NULL;
-	size_t arg_len, len;
-	zend_string *strg;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
-
-	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "pdbc_mysql", arg);
-
-	RETURN_STR(strg);
-}
-/* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and
-   unfold functions in source code. See the corresponding marks just before
-   function definition, where the functions purpose is also documented. Please
-   follow this convention for the convenience of others editing your code.
-*/
-
 
 /* {{{ php_pdbc_mysql_init_globals
  */
@@ -91,6 +60,8 @@ PHP_MINIT_FUNCTION(pdbc_mysql)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+
+	pdbc_mysql_define_driver(TSRMLS_C);
 	return SUCCESS;
 }
 /* }}} */
@@ -132,7 +103,8 @@ PHP_RSHUTDOWN_FUNCTION(pdbc_mysql)
 PHP_MINFO_FUNCTION(pdbc_mysql)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "pdbc_mysql support", "enabled");
+	php_info_print_table_header(2, "PDBC MySQL Driver", "enabled");
+	php_info_print_table_row(2, "PDBC MySQL Driver Version", PHP_PDBC_MYSQL_VERSION);
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
@@ -146,8 +118,7 @@ PHP_MINFO_FUNCTION(pdbc_mysql)
  * Every user visible function must have an entry in pdbc_mysql_functions[].
  */
 const zend_function_entry pdbc_mysql_functions[] = {
-	PHP_FE(confirm_pdbc_mysql_compiled,	NULL)		/* For testing, remove later. */
-	PHP_FE_END	/* Must be the last line in pdbc_mysql_functions[] */
+	PHP_FE_END
 };
 /* }}} */
 
