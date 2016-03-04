@@ -81,6 +81,7 @@ if test "$PHP_PDBC_MYSQL" != "no"; then
 
   PDBC_MYSQL_CLASSES="\
     pdbc_mysql_driver.c \
+    pdbc_mysql_connection.c \
   ";
 
   PHP_NEW_EXTENSION(pdbc_mysql, pdbc_mysql.c $PDBC_MYSQL_CLASSES, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)

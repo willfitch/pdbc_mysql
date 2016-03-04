@@ -56,6 +56,10 @@ typedef struct {
 	zend_object zo;
 } pdbc_mysql_driver_t;
 
+typedef struct {
+	zend_object zo;
+} pdbc_mysql_connection_t;
+
 /*
   	Declare any global variables you may need between the BEGIN
 	and END macros here:
