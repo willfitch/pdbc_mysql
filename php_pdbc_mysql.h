@@ -67,6 +67,7 @@ ZEND_END_MODULE_GLOBALS(pdbc_mysql)
 */
 
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_driver(TSRMLS_D);
+PHP_PDBC_MYSQL_API void pdbc_mysql_define_connection(TSRMLS_D);
 
 /* Always refer to the globals in your function as PDBC_MYSQL_G(variable).
    You are encouraged to rename these macros something shorter, see

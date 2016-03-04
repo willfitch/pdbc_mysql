@@ -80,7 +80,7 @@ PDBC_METHOD(MysqlDriver, getMinorVersion)
 
 const zend_function_entry pdbc_mysql_driver_methods[] = {
 	PDBC_ME(MysqlDriver, __construct,		arginfo_pdbc_mysql_Driver_void,			ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	PDBC_ME(MysqlDriver, acceptsUrl,			arginfo_pdbc_mysql_Driver_acceptsUrl,	ZEND_ACC_PUBLIC)
+	PDBC_ME(MysqlDriver, acceptsUrl,		arginfo_pdbc_mysql_Driver_acceptsUrl,	ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlDriver, connect,			arginfo_pdbc_mysql_Driver_connect,		ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlDriver, getMajorVersion,	arginfo_pdbc_mysql_Driver_void,			ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlDriver, getMinorVersion,	arginfo_pdbc_mysql_Driver_void,			ZEND_ACC_PUBLIC)
@@ -90,7 +90,7 @@ const zend_function_entry pdbc_mysql_driver_methods[] = {
 static zend_object *pdbc_mysql_driver_create_object(zend_class_entry *ce)
 {
 	pdbc_mysql_driver_t *intern;
-	intern = ecalloc(1, sizeof(pdbc_driver_manager_t) + zend_object_properties_size(ce));
+	intern = ecalloc(1, sizeof(pdbc_mysql_driver_t) + zend_object_properties_size(ce));
 
 	zend_object_std_init(&intern->zo, ce);
 	object_properties_init(&intern->zo, ce);
@@ -115,6 +115,8 @@ void pdbc_mysql_define_driver(TSRMLS_D)
 
 	INIT_CLASS_ENTRY(ce, MYSQL_CLASS_NAME_DRIVER, pdbc_mysql_driver_methods);
 	pdbc_mysql_driver_ce = zend_register_internal_class(&ce);
+	zend_class_implements(pdbc_mysql_driver_ce, 1, pdbc_Driver_ce);
+
 	pdbc_mysql_driver_ce->create_object = pdbc_mysql_driver_create_object;
 
 	memcpy(&pdbc_mysql_driver_handlers, zend_get_std_object_handlers(), sizeof(pdbc_mysql_driver_handlers));
