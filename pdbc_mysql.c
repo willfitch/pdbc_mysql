@@ -25,6 +25,9 @@
 #include "php_pdbc_mysql.h"
 #include <mysql.h>
 
+static zend_object *pdbc_mysql_create_connection(pdbc_handle_t *);
+static zend_object *pdbc_mysql_get_driver_instance();
+
 /* If you declare any globals in php_pdbc_mysql.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(pdbc_mysql)
 */
@@ -53,6 +56,18 @@ static void php_pdbc_mysql_init_globals(zend_pdbc_mysql_globals *pdbc_mysql_glob
 */
 /* }}} */
 
+static zend_object *pdbc_mysql_get_driver_instance()
+{
+	zend_object *obj;
+	return obj;
+}
+
+static zend_object *pdbc_mysql_create_connection(pdbc_handle_t *handle)
+{
+	zend_object *obj;
+	return obj;
+}
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 PHP_MINIT_FUNCTION(pdbc_mysql)
@@ -60,7 +75,17 @@ PHP_MINIT_FUNCTION(pdbc_mysql)
 	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
+	pdbc_driver_t *driver;
+	zend_string *name;
+	driver = emalloc(sizeof(pdbc_driver_t));
 
+	name = zend_string_init("mysql", sizeof("mysql") - 1, 0);
+
+	driver->name = name;
+	driver->get_driver_instance = pdbc_mysql_get_driver_instance;
+	driver->create_connection = pdbc_mysql_create_connection;
+
+	pdbc_register_driver(driver);
 	pdbc_mysql_define_driver(TSRMLS_C);
 	return SUCCESS;
 }

@@ -36,20 +36,20 @@ ZEND_END_ARG_INFO();
 
 PDBC_METHOD(MysqlDriver, __construct)
 {
-	RETURN_FALSE;
 }
 
 PDBC_METHOD(MysqlDriver, acceptsUrl)
 {
 	zend_string *url = NULL;
-	pdbc_conn_info_t *conn;
+	pdbc_conn_info_t *conn = NULL;
+	char error[256];
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S", &url) == FAILURE) {
 		return;
 	}
 
-	if ((conn = pdbc_parse_url(url)) == NULL) {
-		return;
+	if ((conn = pdbc_parse_url(url, error)) == NULL) {
+		RETURN_FALSE;
 	}
 
 	if (strcmp(conn->driver->val, "mysql") == 0) {
