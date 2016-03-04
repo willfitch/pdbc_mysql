@@ -115,7 +115,7 @@ void pdbc_mysql_define_driver(TSRMLS_D)
 
 	INIT_CLASS_ENTRY(ce, MYSQL_CLASS_NAME_DRIVER, pdbc_mysql_driver_methods);
 	pdbc_mysql_driver_ce = zend_register_internal_class(&ce);
-	zend_class_implements(pdbc_mysql_driver_ce, 1, pdbc_Driver_ce);
+	zend_class_implements(pdbc_mysql_driver_ce, 1, pdbc_driver_ce);
 
 	pdbc_mysql_driver_ce->create_object = pdbc_mysql_driver_create_object;
 
