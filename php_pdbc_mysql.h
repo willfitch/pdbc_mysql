@@ -46,7 +46,7 @@ extern zend_module_entry pdbc_mysql_module_entry;
 
 #define MYSQL_CLASS_NAME_DRIVER "php\\pdbc\\MysqlDriver"
 #define MYSQL_CLASS_NAME_CONNECTION "php\\pdbc\\MysqlConnection"
-#define MYSQL_CLASS_NAME_DATABASEMETADATA "php\\pdbc\\MysqlDatabaseMetaData"
+#define MYSQL_CLASS_NAME_MYSQL_METADATA "php\\pdbc\\MysqlDatabaseMetaData"
 #define MYSQL_CLASS_NAME_RESULTSET "php\\pdbc\\MysqlResultSet"
 #define MYSQL_CLASS_NAME_STATEMENT "php\\pdbc\\MysqlStatement"
 #define MYSQL_CLASS_NAME_DRIVER_MANAGER "php\\pdbc\\MysqlDriverManager"
@@ -60,6 +60,9 @@ typedef struct {
 	zend_object zo;
 } pdbc_mysql_connection_t;
 
+typedef struct {
+	zend_object zo;
+} pdbc_mysql_metadata_t;
 /*
   	Declare any global variables you may need between the BEGIN
 	and END macros here:
@@ -72,6 +75,7 @@ ZEND_END_MODULE_GLOBALS(pdbc_mysql)
 
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_driver(TSRMLS_D);
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_connection(TSRMLS_D);
+PHP_PDBC_MYSQL_API void pdbc_mysql_define_db_metadata(TSRMLS_D);
 
 /* Always refer to the globals in your function as PDBC_MYSQL_G(variable).
    You are encouraged to rename these macros something shorter, see

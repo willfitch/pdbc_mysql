@@ -88,6 +88,7 @@ PHP_MINIT_FUNCTION(pdbc_mysql)
 	pdbc_register_driver(driver);
 	pdbc_mysql_define_driver(TSRMLS_C);
 	pdbc_mysql_define_connection(TSRMLS_C);
+	pdbc_mysql_define_db_metadata(TSRMLS_C);
 	return SUCCESS;
 }
 /* }}} */

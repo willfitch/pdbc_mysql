@@ -186,7 +186,7 @@ void pdbc_mysql_define_connection(TSRMLS_D)
 
 	INIT_CLASS_ENTRY(ce, MYSQL_CLASS_NAME_CONNECTION, pdbc_mysql_connection_methods);
 	pdbc_mysql_connection_ce = zend_register_internal_class(&ce);
-	//zend_class_implements(pdbc_mysql_connection_ce, 1, pdbc_connection_ce);
+	zend_class_implements(pdbc_mysql_connection_ce, 1, pdbc_connection_ce);
 	pdbc_mysql_connection_ce->create_object = pdbc_mysql_connection_create_object;
 
 	memcpy(&pdbc_mysql_connection_handlers, zend_get_std_object_handlers(), sizeof(pdbc_mysql_connection_handlers));
