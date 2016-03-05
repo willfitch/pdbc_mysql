@@ -23,10 +23,9 @@
 #endif
 
 #include "php_pdbc_mysql.h"
-#include <mysql.h>
 
-static zend_object *pdbc_mysql_create_connection(pdbc_handle_t *);
-static zend_object *pdbc_mysql_get_driver_instance();
+static void pdbc_mysql_create_connection(pdbc_handle_t *, zval *retval);
+static void pdbc_mysql_get_driver_instance(zval *retval);
 
 /* If you declare any globals in php_pdbc_mysql.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(pdbc_mysql)
@@ -56,16 +55,13 @@ static void php_pdbc_mysql_init_globals(zend_pdbc_mysql_globals *pdbc_mysql_glob
 */
 /* }}} */
 
-static zend_object *pdbc_mysql_get_driver_instance()
+static void pdbc_mysql_get_driver_instance(zval *retval)
 {
-	zend_object *obj;
-	return obj;
 }
 
-static zend_object *pdbc_mysql_create_connection(pdbc_handle_t *handle)
+static void pdbc_mysql_create_connection(pdbc_handle_t *handle, zval *retval)
 {
-	zend_object *obj;
-	return obj;
+	object_init_ex(retval, pdbc_mysql_connection_ce);
 }
 
 /* {{{ PHP_MINIT_FUNCTION

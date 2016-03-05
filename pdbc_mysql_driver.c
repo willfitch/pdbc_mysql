@@ -48,7 +48,7 @@ PDBC_METHOD(MysqlDriver, acceptsUrl)
 		return;
 	}
 
-	if ((conn = pdbc_parse_url(url, error)) == NULL) {
+	if ((conn = pdbc_parse_url(url, NULL, NULL, error)) == NULL) {
 		RETURN_FALSE;
 	}
 

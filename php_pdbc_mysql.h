@@ -24,6 +24,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "pdbc/php_pdbc.h"
+#include <mysql.h>
 
 extern zend_module_entry pdbc_mysql_module_entry;
 #define phpext_pdbc_mysql_ptr &pdbc_mysql_module_entry
@@ -52,11 +53,18 @@ extern zend_module_entry pdbc_mysql_module_entry;
 #define MYSQL_CLASS_NAME_DRIVER_MANAGER "php\\pdbc\\MysqlDriverManager"
 #define MYSQL_CLASS_NAME_TYPES "php\\pdbc\\MysqlTypes"
 
+extern zend_class_entry *pdbc_mysql_connection_ce;
+extern zend_class_entry *pdbc_mysql_driver_ce;
+
 typedef struct {
 	zend_object zo;
 } pdbc_mysql_driver_t;
 
 typedef struct {
+	struct _mysql_connection {
+		MYSQL *handle;
+		char *blah;
+	} conn;
 	zend_object zo;
 } pdbc_mysql_connection_t;
 

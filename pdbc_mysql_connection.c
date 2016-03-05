@@ -50,6 +50,23 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_pdbc_MysqlConnection_setTransactionIsolation, 0, 
 	ZEND_ARG_INFO(0, level)
 ZEND_END_ARG_INFO();
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_pdbc_MysqlConnection___construct, 0, 0, 1)
+	ZEND_ARG_INFO(0, url)
+	ZEND_ARG_INFO(0, user)
+	ZEND_ARG_INFO(0, password)
+ZEND_END_ARG_INFO();
+
+PDBC_METHOD(MysqlConnection, __construct)
+{
+	zend_string *url = NULL;
+	zend_string *user = NULL;
+	zend_string *password = NULL;
+	pdbc_driver_t *driver = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S|SS", &url, &user, &password) == FAILURE) {
+		return;
+	}
+}
 
 PDBC_METHOD(MysqlConnection, close)
 {
@@ -96,7 +113,7 @@ PDBC_METHOD(MysqlConnection, getSchema)
 	RETURN_FALSE;
 }
 
-PDBC_METHOD(MysqlConnection, getTransactionalIsolation)
+PDBC_METHOD(MysqlConnection, getTransactionIsolation)
 {
 	RETURN_FALSE;
 }
@@ -131,12 +148,13 @@ PDBC_METHOD(MysqlConnection, setNetworkTimeout)
 	RETURN_FALSE;
 }
 
-PDBC_METHOD(MysqlConnection, setTransactionalIsolation)
+PDBC_METHOD(MysqlConnection, setTransactionIsolation)
 {
 	RETURN_FALSE;
 }
 
 const zend_function_entry pdbc_mysql_connection_methods[] = {
+	PDBC_ME(MysqlConnection, __construct,				arginfo_pdbc_MysqlConnection___construct,				ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
 	PDBC_ME(MysqlConnection, close,						arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, commit,					arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, createStatement,			arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
@@ -146,14 +164,14 @@ const zend_function_entry pdbc_mysql_connection_methods[] = {
 	PDBC_ME(MysqlConnection, getMetaData,				arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, getNetworkTimeout,			arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, getSchema,					arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
-	PDBC_ME(MysqlConnection, getTransactionalIsolation,	arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
+	PDBC_ME(MysqlConnection, getTransactionIsolation,	arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, isClosed,					arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, prepareCall,				arginfo_pdbc_MysqlConnection_prepareCall,				ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, prepareStatement,			arginfo_pdbc_MysqlConnection_prepareStatement,			ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, rollback,					arginfo_pdbc_MysqlConnection_void,						ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, setAutoCommit,				arginfo_pdbc_MysqlConnection_setAutoCommit,				ZEND_ACC_PUBLIC)
 	PDBC_ME(MysqlConnection, setNetworkTimeout,			arginfo_pdbc_MysqlConnection_setNetworkTimeout,			ZEND_ACC_PUBLIC)
-	PDBC_ME(MysqlConnection, setTransactionalIsolation,	arginfo_pdbc_MysqlConnection_setTransactionIsolation,	ZEND_ACC_PUBLIC)
+	PDBC_ME(MysqlConnection, setTransactionIsolation,	arginfo_pdbc_MysqlConnection_setTransactionIsolation,	ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 
