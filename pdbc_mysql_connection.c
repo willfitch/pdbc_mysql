@@ -51,19 +51,20 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_pdbc_MysqlConnection_setTransactionIsolation, 0, 
 ZEND_END_ARG_INFO();
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_pdbc_MysqlConnection___construct, 0, 0, 1)
-	ZEND_ARG_INFO(0, url)
+	ZEND_ARG_INFO(0, hostname)
 	ZEND_ARG_INFO(0, user)
 	ZEND_ARG_INFO(0, password)
+	ZEND_ARG_INFO(0, port)
 ZEND_END_ARG_INFO();
 
 PDBC_METHOD(MysqlConnection, __construct)
 {
-	zend_string *url = NULL;
+	zend_string *hostname = NULL;
 	zend_string *user = NULL;
 	zend_string *password = NULL;
-	pdbc_driver_t *driver = NULL;
+	zend_long	port = 3306;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S|SS", &url, &user, &password) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "S|SSl", &hostname, &user, &password, &port) == FAILURE) {
 		return;
 	}
 }
@@ -175,11 +176,11 @@ const zend_function_entry pdbc_mysql_connection_methods[] = {
 	PHP_FE_END
 };
 
-
 static zend_object *pdbc_mysql_connection_create_object(zend_class_entry *ce)
 {
 	pdbc_mysql_connection_t *intern;
 	intern = ecalloc(1, sizeof(pdbc_mysql_connection_t) + zend_object_properties_size(ce));
+	intern->conn.mysql = mysql_init(NULL);
 
 	zend_object_std_init(&intern->zo, ce);
 	object_properties_init(&intern->zo, ce);
@@ -190,6 +191,17 @@ static zend_object *pdbc_mysql_connection_create_object(zend_class_entry *ce)
 
 static void pdbc_mysql_connection_free_object(zend_object *obj)
 {
+	pdbc_mysql_connection_t *intern;
+	intern = pdbc_mysql_connect_fetch_object(obj);
+	
+	if (intern->conn.mysql) {
+		mysql_close(intern->conn.mysql);
+	}
+
+	if (intern->handle) {
+		pdbc_free_handle(intern->handle);
+	}
+
 	zend_object_std_dtor(obj);
 }
 

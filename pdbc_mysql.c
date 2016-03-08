@@ -61,7 +61,10 @@ static void pdbc_mysql_get_driver_instance(zval *retval)
 
 static void pdbc_mysql_create_connection(pdbc_handle_t *handle, zval *retval)
 {
+	pdbc_mysql_connection_t *intern;
 	object_init_ex(retval, pdbc_mysql_connection_ce);
+	intern = pdbc_mysql_connect_fetch_object(Z_OBJ_P(retval));
+	intern->handle = handle;
 }
 
 /* {{{ PHP_MINIT_FUNCTION

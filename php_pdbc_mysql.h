@@ -45,6 +45,8 @@ extern zend_module_entry pdbc_mysql_module_entry;
 #include "TSRM.h"
 #endif
 
+#define Z_MYCON_P(zv) pdbc_mysql_connect_fetch_object(Z_OBJ_P(zv))
+
 #define MYSQL_CLASS_NAME_DRIVER "php\\pdbc\\MysqlDriver"
 #define MYSQL_CLASS_NAME_CONNECTION "php\\pdbc\\MysqlConnection"
 #define MYSQL_CLASS_NAME_MYSQL_METADATA "php\\pdbc\\MysqlDatabaseMetaData"
@@ -62,9 +64,10 @@ typedef struct {
 
 typedef struct {
 	struct _mysql_connection {
-		MYSQL *handle;
-		char *blah;
+		MYSQL *mysql;
 	} conn;
+
+	pdbc_handle_t *handle;
 	zend_object zo;
 } pdbc_mysql_connection_t;
 
@@ -84,6 +87,12 @@ ZEND_END_MODULE_GLOBALS(pdbc_mysql)
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_driver(TSRMLS_D);
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_connection(TSRMLS_D);
 PHP_PDBC_MYSQL_API void pdbc_mysql_define_db_metadata(TSRMLS_D);
+
+static inline pdbc_mysql_connection_t *pdbc_mysql_connect_fetch_object(zend_object *obj)
+{
+    return (pdbc_mysql_connection_t *)((char *)(obj) - XtOffsetOf(pdbc_mysql_connection_t, zo));
+}
+
 
 /* Always refer to the globals in your function as PDBC_MYSQL_G(variable).
    You are encouraged to rename these macros something shorter, see
